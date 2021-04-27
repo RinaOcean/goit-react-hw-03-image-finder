@@ -14,6 +14,14 @@ class SearchBar extends Component {
     this.setState({ inputValue: event.currentTarget.value });
   };
 
+  handleSubmit = event => {
+    event.preventDefault();
+  };
+
+  reset = () => {
+    this.setState({ inputValue: '' });
+  };
+
   render() {
     const { inputValue } = this.state;
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
+import SearchBar from './components/SearchBar';
 import './App.scss';
 
 class App extends Component {
@@ -12,7 +12,9 @@ class App extends Component {
 
   // };
 
-  render() {}
+  render() {
+    return <SearchBar />;
+  }
 }
 
 export default App;

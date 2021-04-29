@@ -7,8 +7,8 @@ import ImageGallery from './components/ImageGallery';
 import ImageGalleryItem from './components/ImageGalleryItem';
 import Button from './components/Button';
 import imagesApi from './services/images-api';
-
-import Loader from 'react-loader-spinner';
+import Modal from './components/Modal';
+// import Loader from 'react-loader-spinner';
 import './App.scss';
 
 class App extends Component {
@@ -84,6 +84,7 @@ class App extends Component {
 
   render() {
     const { images, isLoading } = this.state;
+    const shouldRenderLoadMoreButton = images.length > 0 && !isLoading;
     return (
       <>
         <SearchBar onSubmit={this.onSearchHandle} />
@@ -101,15 +102,8 @@ class App extends Component {
             />
             Loading...
           </button>
-          // <Loader
-          //   className="Loader"
-          //   type="BallTriangle"
-          //   color="#303f9f"
-          //   height={100}
-          //   width={100}
-          // />
         )}
-        {images.length > 0 && !isLoading && (
+        {shouldRenderLoadMoreButton && (
           <Button onClick={this.fetchImages} isLoading={isLoading}></Button>
         )}
       </>

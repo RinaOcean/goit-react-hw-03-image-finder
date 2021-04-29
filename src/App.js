@@ -4,6 +4,7 @@ import SearchBar from './components/SearchBar';
 import ImageGallery from './components/ImageGallery';
 import ImageGalleryItem from './components/ImageGalleryItem';
 import Button from './components/Button';
+import Container from './components/Container';
 import axios from 'axios';
 
 import './App.scss';
@@ -19,27 +20,12 @@ class App extends Component {
 
   state = {
     images: [],
+    currentPage: 1,
+    searchQuery: '',
   };
 
   onSearchHandle = query => {
-    console.log(query);
-
-    const url = `${BASE_URL}/?image_type=photo&orientation=horizontal&q=${query}&page=1&per_page=12&key=${API_KEY}`;
-
-    axios.get(url).then(response => {
-      const filteredData = response.data.hits.map(hit => {
-        return {
-          id: hit.id,
-          webformatURL: hit.webformatURL,
-          largeImageURL: hit.largeImageURL,
-        };
-      });
-      console.log(this.state.images);
-      this.setState({
-        images: filteredData,
-      });
-      console.log(this.state.images);
-    });
+    this.setState({ searchQuery: query });
 
     // if (!response.ok) {
     //   throw response;
@@ -57,18 +43,42 @@ class App extends Component {
     //     console.warn(err);
     //   });
   };
+  fetchImages = () => {
+    const { currentPage, searchQuery } = this.state;
+
+    const url = `${BASE_URL}/?image_type=photo&orientation=horizontal&q=${searchQuery}&page=${currentPage}&per_page=12&key=${API_KEY}`;
+
+    axios.get(url).then(response => {
+      const filteredData = response.data.hits.map(hit => {
+        return {
+          id: hit.id,
+          webformatURL: hit.webformatURL,
+          largeImageURL: hit.largeImageURL,
+        };
+      });
+
+      this.setState(prevState => ({
+        images: [...prevState.images, ...filteredData],
+        currentPage: prevState.currentPage + 1,
+      }));
+    });
+  };
   // componentDidMount() {}
-  // componentDidUpdate(prevProps, prevState, snapshot) {}
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchQuery !== this.state.searchQuery) {
+      this.fetchImages();
+    }
+  }
 
   render() {
     return (
-      <>
+      <Container>
         <SearchBar onSubmit={this.onSearchHandle} />
         <ImageGallery>
           <ImageGalleryItem images={this.state.images} />
         </ImageGallery>
-        <Button />
-      </>
+        <Button onClick={this.fetchImages} />
+      </Container>
     );
   }
 }

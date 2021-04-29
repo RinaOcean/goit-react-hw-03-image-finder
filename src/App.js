@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
+import Spinner from 'react-bootstrap/Spinner';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import PropTypes from 'prop-types';
 import SearchBar from './components/SearchBar';
 import ImageGallery from './components/ImageGallery';
 import ImageGalleryItem from './components/ImageGalleryItem';
 import Button from './components/Button';
-import Container from './components/Container';
-import axios from 'axios';
+import imagesApi from './services/images-api';
 
+import Loader from 'react-loader-spinner';
 import './App.scss';
-
-const API_KEY = '20659430-8e33c69d8b4c60137606db57c';
-const BASE_URL = 'https://pixabay.com/api';
 
 class App extends Component {
   // static propTypes = {
@@ -22,10 +21,11 @@ class App extends Component {
     images: [],
     currentPage: 1,
     searchQuery: '',
+    isLoading: false,
   };
 
   onSearchHandle = query => {
-    this.setState({ searchQuery: query });
+    this.setState({ searchQuery: query, currentPage: 1, images: [] });
 
     // if (!response.ok) {
     //   throw response;
@@ -45,22 +45,34 @@ class App extends Component {
   };
   fetchImages = () => {
     const { currentPage, searchQuery } = this.state;
+    const options = {
+      searchQuery,
+      currentPage,
+    };
 
-    const url = `${BASE_URL}/?image_type=photo&orientation=horizontal&q=${searchQuery}&page=${currentPage}&per_page=12&key=${API_KEY}`;
+    this.setState({ isLoading: true });
 
-    axios.get(url).then(response => {
-      const filteredData = response.data.hits.map(hit => {
-        return {
-          id: hit.id,
-          webformatURL: hit.webformatURL,
-          largeImageURL: hit.largeImageURL,
-        };
-      });
+    imagesApi
+      .fetchImages(options)
+      .then(response => {
+        const filteredData = response.data.hits.map(hit => {
+          return {
+            id: hit.id,
+            webformatURL: hit.webformatURL,
+            largeImageURL: hit.largeImageURL,
+          };
+        });
 
-      this.setState(prevState => ({
-        images: [...prevState.images, ...filteredData],
-        currentPage: prevState.currentPage + 1,
-      }));
+        this.setState(prevState => ({
+          images: [...prevState.images, ...filteredData],
+          currentPage: prevState.currentPage + 1,
+        }));
+      })
+      .finally(() => this.setState({ isLoading: false }));
+
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
     });
   };
   // componentDidMount() {}
@@ -71,14 +83,36 @@ class App extends Component {
   }
 
   render() {
+    const { images, isLoading } = this.state;
     return (
-      <Container>
+      <>
         <SearchBar onSubmit={this.onSearchHandle} />
         <ImageGallery>
           <ImageGalleryItem images={this.state.images} />
         </ImageGallery>
-        <Button onClick={this.fetchImages} />
-      </Container>
+        {isLoading && (
+          <button className="Loader" variant="primary" disabled>
+            <Spinner
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+            />
+            Loading...
+          </button>
+          // <Loader
+          //   className="Loader"
+          //   type="BallTriangle"
+          //   color="#303f9f"
+          //   height={100}
+          //   width={100}
+          // />
+        )}
+        {images.length > 0 && !isLoading && (
+          <Button onClick={this.fetchImages} isLoading={isLoading}></Button>
+        )}
+      </>
     );
   }
 }

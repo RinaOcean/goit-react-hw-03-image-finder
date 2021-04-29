@@ -1,5 +1,5 @@
-const ImageGallery = () => (
-  <ul className="ImageGallery">{/* <!-- Набор <li> с изображениями --> */}</ul>
+const ImageGallery = ({ children }) => (
+  <ul className="ImageGallery">{children}</ul>
 );
 
 export default ImageGallery;

@@ -16,18 +16,25 @@ class SearchBar extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
+    this.props.onSubmit(this.state.inputValue);
+    this.reset();
   };
 
   reset = () => {
     this.setState({ inputValue: '' });
   };
 
+  // componentDidMount() {}
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+
+  // }
+
   render() {
     const { inputValue } = this.state;
 
     return (
       <header className="Searchbar">
-        <form className="SearchForm">
+        <form onSubmit={this.handleSubmit} className="SearchForm">
           <button type="submit" className="SearchForm-button">
             <span className="SearchForm-button-label">Search</span>
           </button>
@@ -36,8 +43,8 @@ class SearchBar extends Component {
             className="SearchForm-input"
             type="text"
             value={inputValue}
-            autocomplete="off"
-            autofocus
+            autoComplete="off"
+            autoFocus
             placeholder="Search images and photos"
             onChange={this.handleChange}
           />

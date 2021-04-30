@@ -123,7 +123,7 @@ class App extends Component {
     return (
       <>
         {showModal && (
-          <Modal onClick={this.toggleModal}>
+          <Modal onClose={this.toggleModal}>
             {imageStatus === 'loading' && (
               <Loader type="Circles" color="#4b817a" height={80} width={80} />
             )}

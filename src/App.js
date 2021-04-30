@@ -125,7 +125,7 @@ class App extends Component {
         {showModal && (
           <Modal onClick={this.toggleModal}>
             {imageStatus === 'loading' && (
-              <Loader type="Circles" color="#00BFFF" height={80} width={80} />
+              <Loader type="Circles" color="#4b817a" height={80} width={80} />
             )}
 
             <img src={bigImageUrl} alt="" onLoad={this.onImageLoaded} />

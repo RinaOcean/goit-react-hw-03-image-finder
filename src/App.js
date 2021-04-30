@@ -13,10 +13,16 @@ import Modal from './components/Modal';
 import './App.scss';
 
 class App extends Component {
-  // static propTypes = {
-  // images: PropTypes.array
-
-  // };
+  static propTypes = {
+    images: PropTypes.arrayOf(PropTypes.object),
+    currentPage: PropTypes.number,
+    searchQuery: PropTypes.string,
+    isLoading: PropTypes.bool,
+    error: PropTypes.object,
+    showModal: PropTypes.bool,
+    bigImageUrl: PropTypes.string,
+    imageStatus: PropTypes.string,
+  };
 
   state = {
     images: [],

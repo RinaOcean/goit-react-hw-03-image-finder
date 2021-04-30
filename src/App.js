@@ -69,14 +69,16 @@ class App extends Component {
           images: [...prevState.images, ...filteredData],
           currentPage: prevState.currentPage + 1,
         }));
+
+        if (this.state.currentPage > 2) {
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
       })
       .catch(error => this.setState({ error }))
       .finally(() => this.setState({ isLoading: false }));
-
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
   };
 
   onImageClick = url => {

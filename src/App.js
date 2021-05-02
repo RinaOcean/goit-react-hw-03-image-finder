@@ -10,6 +10,7 @@ import Button from './components/Button';
 import imagesApi from './services/images-api';
 import Modal from './components/Modal';
 import LoaderSpinner from './components/LoaderSpinner';
+import ErrorMarkup from './components/ErrorMarkup/ErrorMarkup ';
 
 import 'react-toastify/dist/ReactToastify.css';
 import './App.scss';
@@ -132,17 +133,12 @@ class App extends Component {
             {imageStatus === 'loading' && (
               <Loader type="Circles" color="#4b817a" height={80} width={80} />
             )}
-
             <img src={bigImageUrl} alt="" onLoad={this.onImageLoaded} />
           </Modal>
         )}
 
         <SearchBar onSubmit={this.onSearchHandle} />
-        {error && (
-          <h1 className="error-text">
-            Ooops!Something went wrong. Try again later
-          </h1>
-        )}
+        {error && <ErrorMarkup />}
         <ImageGallery images={images} onClick={this.onImageClick} />
         {isLoading && <LoaderSpinner />}
         {shouldRenderLoadMoreButton && (

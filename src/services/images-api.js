@@ -1,6 +1,4 @@
 import axios from 'axios';
-// import { toast } from 'react-toastify';
-
 const API_KEY = '20659430-8e33c69d8b4c60137606db57c';
 const BASE_URL = 'https://pixabay.com/api';
 

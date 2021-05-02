@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import Loader from 'react-loader-spinner';
 import PropTypes from 'prop-types';
+
 import SearchBar from './components/SearchBar';
 import ImageGallery from './components/ImageGallery';
-import ImageGalleryItem from './components/ImageGalleryItem';
 import Button from './components/Button';
 import imagesApi from './services/images-api';
 import Modal from './components/Modal';
+import LoaderSpinner from './components/LoaderSpinner';
 
+import 'react-toastify/dist/ReactToastify.css';
 import './App.scss';
 
 class App extends Component {
@@ -42,15 +44,8 @@ class App extends Component {
       images: [],
       error: null,
     });
-
-    // if (!response.ok) {
-    //   throw response;
-    // }
-
-    //   .catch(err => {
-    //     console.warn(err);
-    //   });
   };
+
   fetchImages = () => {
     const { currentPage, searchQuery } = this.state;
     const options = {
@@ -63,6 +58,10 @@ class App extends Component {
     imagesApi
       .fetchImages(options)
       .then(response => {
+        if (response.data.total === 0) {
+          toast.error('Nothing matching the request');
+          return;
+        }
         const filteredData = response.data.hits.map(hit => {
           return {
             id: hit.id,
@@ -75,16 +74,20 @@ class App extends Component {
           images: [...prevState.images, ...filteredData],
           currentPage: prevState.currentPage + 1,
         }));
-
+      })
+      .catch(error => {
+        this.setState({ error });
+        toast.error('Error occurred. Try later');
+      })
+      .finally(() => {
         if (this.state.currentPage > 2) {
           window.scrollTo({
             top: document.documentElement.scrollHeight,
             behavior: 'smooth',
           });
         }
-      })
-      .catch(error => this.setState({ error }))
-      .finally(() => this.setState({ isLoading: false }));
+        return this.setState({ isLoading: false });
+      });
   };
 
   onImageClick = url => {
@@ -119,7 +122,9 @@ class App extends Component {
       bigImageUrl,
       imageStatus,
     } = this.state;
+
     const shouldRenderLoadMoreButton = images.length > 0 && !isLoading;
+
     return (
       <>
         {showModal && (
@@ -131,26 +136,19 @@ class App extends Component {
             <img src={bigImageUrl} alt="" onLoad={this.onImageLoaded} />
           </Modal>
         )}
-        {error && <h1>Ooops!Something went wrong. Try again</h1>}
+
         <SearchBar onSubmit={this.onSearchHandle} />
-        <ImageGallery>
-          <ImageGalleryItem images={images} onClick={this.onImageClick} />
-        </ImageGallery>
-        {isLoading && (
-          <button className="Loader" variant="primary" disabled>
-            <Spinner
-              as="span"
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden="true"
-            />
-            Loading...
-          </button>
+        {error && (
+          <h1 className="error-text">
+            Ooops!Something went wrong. Try again later
+          </h1>
         )}
+        <ImageGallery images={images} onClick={this.onImageClick} />
+        {isLoading && <LoaderSpinner />}
         {shouldRenderLoadMoreButton && (
           <Button onClick={this.fetchImages} isLoading={isLoading}></Button>
         )}
+        <ToastContainer />
       </>
     );
   }

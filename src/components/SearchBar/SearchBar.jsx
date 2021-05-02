@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 
 class SearchBar extends Component {
@@ -16,6 +17,11 @@ class SearchBar extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
+    if (this.state.inputValue.trim() === '') {
+      toast.warn('Please, enter something');
+
+      return;
+    }
     this.props.onSubmit(this.state.inputValue);
     this.reset();
   };

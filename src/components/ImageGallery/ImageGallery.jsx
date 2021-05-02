@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
+import ImageGalleryItem from '../ImageGalleryItem';
 
-const ImageGallery = ({ children }) => (
-  <ul className="ImageGallery">{children}</ul>
+const ImageGallery = ({ images, onClick }) => (
+  <ul className="ImageGallery">
+    <ImageGalleryItem images={images} onClick={onClick} />
+  </ul>
 );
 
 ImageGallery.propTypes = {
